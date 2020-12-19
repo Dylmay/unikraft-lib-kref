@@ -37,10 +37,6 @@ extern "C" {
 #endif
 
 //#include <sys/types.h>
-//#include <sys/refcount.h>
-
-//#include <linux/compiler.h>
-//#include <linux/kernel.h>
 #include <uk/mutex.h>
 #include <uk/refcount.h>
 
@@ -51,25 +47,25 @@ struct uk_kref {
 static inline void
 uk_kref_init(struct uk_kref *kref) {
 
-    uk_refcount_init(&kref->refcount.counter, 1);
+    uk_refcount_init(&kref->refcount, 1);
 }
 
 static inline unsigned int
 uk_kref_read(const struct uk_kref *kref) {
 
-    return (atomic_read(&kref->refcount));
+    return (uk_refcount_read(&kref->refcount));
 }
 
 static inline void
 uk_kref_get(struct uk_kref *kref) {
 
-    uk_refcount_acquire(&kref->refcount.counter);
+    uk_refcount_acquire(&kref->refcount);
 }
 
 static inline int
 uk_kref_put(struct uk_kref *kref, void (*rel)(struct uk_kref *kref)) {
 
-    if (uk_refcount_release(&kref->refcount.counter)) {
+    if (uk_refcount_release(&kref->refcount)) {
         rel(kref);
         return 1;
     }
@@ -80,7 +76,7 @@ static inline int
 uk_kref_put_lock(struct uk_kref *kref, void (*rel)(struct kref *kref),
               spinlock_t *lock) {
 
-    if (uk_refcount_release(&kref->refcount.counter)) {
+    if (uk_refcount_release(&kref->refcount)) {
         spin_lock(lock);
         rel(kref);
         return (1);
@@ -93,7 +89,7 @@ uk_kref_sub(struct uk_kref *kref, unsigned int count,
          void (*rel)(struct kref *kref)) {
 
     while (count--) {
-        if (refcount_release(&kref->refcount.counter)) {
+        if (uk_refcount_release(&kref->refcount)) {
             rel(kref);
             return 1;
         }
@@ -101,7 +97,7 @@ uk_kref_sub(struct uk_kref *kref, unsigned int count,
     return 0;
 }
 
-static inline int __must_check
+static inline int /*__must_check*/
 uk_kref_get_unless_zero(struct uk_kref *kref) {
 
     return atomic_add_unless(&kref->refcount, 1, 0);
@@ -109,7 +105,7 @@ uk_kref_get_unless_zero(struct uk_kref *kref) {
 
 static inline int uk_kref_put_mutex(struct uk_kref *kref,
                                  void (*release)(struct uk_kref *kref), struct uk_mutex *lock) {
-    WARN_ON(release == NULL);
+    //WARN_ON(release == NULL);
     if (unlikely(!atomic_add_unless(&kref->refcount, -1, 1))) {
         uk_mutex_lock(lock);
         if (unlikely(!atomic_dec_and_test(&kref->refcount))) {
