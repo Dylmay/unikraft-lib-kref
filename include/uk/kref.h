@@ -111,9 +111,9 @@ static inline int uk_kref_put_mutex(struct uk_kref *kref,
                                  void (*release)(struct uk_kref *kref), struct uk_mutex *lock) {
     WARN_ON(release == NULL);
     if (unlikely(!atomic_add_unless(&kref->refcount, -1, 1))) {
-        mutex_lock(lock);
+        uk_mutex_lock(lock);
         if (unlikely(!atomic_dec_and_test(&kref->refcount))) {
-            mutex_unlock(lock);
+            uk_mutex_unlock(lock);
             return 0;
         }
         release(kref);
