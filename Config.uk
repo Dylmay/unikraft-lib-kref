@@ -1,0 +1,4 @@
+config LIBUKKREF
+    bool "ukkref: Implementation of kref"
+    default n
+    select LIBUKLOCK

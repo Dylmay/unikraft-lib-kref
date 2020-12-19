@@ -1,0 +1,4 @@
+$(eval $(call addlib_s,libukkref,$(CONFIG_LIBUKKREF)))
+
+CINCLUDES-$(CONFIG_LIBUKKREF)   += -I$(LIBUKKREF_BASE)/include
+CXXINCLUDES-$(CONFIG_LIBUKKREF) += -I$(LIBUKKREF_BASE)/include
