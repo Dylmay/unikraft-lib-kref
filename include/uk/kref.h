@@ -72,6 +72,7 @@ uk_kref_put(struct uk_kref *kref, void (*rel)(struct uk_kref *kref)) {
     return 0;
 }
 
+/*
 static inline int
 uk_kref_put_lock(struct uk_kref *kref, void (*rel)(struct kref *kref),
               spinlock_t *lock) {
@@ -83,6 +84,7 @@ uk_kref_put_lock(struct uk_kref *kref, void (*rel)(struct kref *kref),
     }
     return (0);
 }
+*/
 
 static inline int
 uk_kref_sub(struct uk_kref *kref, unsigned int count,
