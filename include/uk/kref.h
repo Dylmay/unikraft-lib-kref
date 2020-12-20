@@ -88,7 +88,7 @@ uk_kref_put_lock(struct uk_kref *kref, void (*rel)(struct kref *kref),
 
 static inline int
 uk_kref_sub(struct uk_kref *kref, unsigned int count,
-         void (*rel)(struct kref *kref)) {
+         void (*rel)(struct uk_kref *kref)) {
 
     while (count--) {
         if (uk_refcount_release(&kref->refcount)) {
