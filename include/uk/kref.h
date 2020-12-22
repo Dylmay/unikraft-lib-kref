@@ -36,7 +36,7 @@
 extern "C" {
 #endif
 
-#include <uk/spinlock.h>
+#include <uk/plat/spinlock.h>
 #include <uk/mutex.h>
 #include <uk/refcount.h>
 
